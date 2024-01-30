@@ -5,20 +5,73 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.util.Vector;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 public class category extends javax.swing.JFrame {
 
     public category() {
         initComponents();
+        load_tableData();
+        status_combox.setSelectedIndex(-1);
     }
     
     
     
     Connection conn;
     PreparedStatement pst;
+    
+    // defined methods
+    
+    private void load_tableData(){
+        int c;
+        
+        try {
+            Class.forName("org.postgresql.Driver");
+            conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/"+"pos","postgres","swap2");
+            pst = conn.prepareStatement("SELECT * FROM category");
+            
+            ResultSet rs = pst.executeQuery();
+            
+            ResultSetMetaData rsd = rs.getMetaData();
+            c = rsd.getColumnCount();
+            
+            
+            DefaultTableModel d = (DefaultTableModel)table_1.getModel();
+            d.setRowCount(0);
+            
+            while(rs.next()){
+                Vector v2 = new Vector();
+                
+                for(int i = 1;i<=c; i++){
+                    v2.add(rs.getString("id"));
+                    v2.add(rs.getString("category"));
+                    v2.add(rs.getString("status"));
+                }
+                
+                d.addRow(v2);
+                
+            }
+            
+        } catch (ClassNotFoundException ex) {            
+            JOptionPane.showMessageDialog(null, ex, "Error", HEIGHT);
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, ex, "Connection failed", HEIGHT);
+        }
+        
+        
+        
+    }
+    
+    
+    
+    
+    
+    
+    
     
    
     @SuppressWarnings("unchecked")
@@ -320,21 +373,22 @@ public class category extends javax.swing.JFrame {
     private void add_btnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_add_btnActionPerformed
         String category_name = cat_txt.getText();
         String status = status_combox.getSelectedItem().toString();
-       
+
         try {
-            Class.forName("org.postgresql.Driver");
-            conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/"+"pos","postgres","");
-            pst = conn.prepareStatement("INSERT INTO category(category, status) VALUES(?,?)");
-            pst.setString(1, category_name);
-            pst.setString(2, status);
-            pst.executeUpdate();
-            
-            JOptionPane.showMessageDialog(null, "Category added");
-            cat_txt.setText("");
-            status_combox.setSelectedIndex(-1);
-            
-            cat_txt.requestFocus();
-            
+        Class.forName("org.postgresql.Driver");
+        conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/"+"pos","postgres","swap2");
+        pst = conn.prepareStatement("INSERT INTO category(category, status) VALUES(?,?)");
+        pst.setString(1, category_name);
+        pst.setString(2, status);
+        pst.executeUpdate();
+
+        JOptionPane.showMessageDialog(null, "Category added");
+        load_tableData();
+        cat_txt.setText("");
+        status_combox.setSelectedIndex(-1);
+
+        cat_txt.requestFocus();
+
         } catch (ClassNotFoundException ex) {
             //Logger.getLogger(category.class.getName()).log(Level.SEVERE, null, ex);
             JOptionPane.showMessageDialog(null, ex, "Error", HEIGHT);
@@ -342,6 +396,10 @@ public class category extends javax.swing.JFrame {
            // Logger.getLogger(category.class.getName()).log(Level.SEVERE, null, ex);
             JOptionPane.showMessageDialog(null, ex, "Connection failed", HEIGHT);
         }
+            
+      
+        
+        
         
         
         
