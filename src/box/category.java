@@ -66,13 +66,7 @@ public class category extends javax.swing.JFrame {
         
     }
     
-    
-    
-    
-    
-    
-    
-    
+  
    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -229,6 +223,11 @@ public class category extends javax.swing.JFrame {
         });
 
         edit_btn.setText("Edit");
+        edit_btn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                edit_btnActionPerformed(evt);
+            }
+        });
 
         delete_btn.setText("Delete");
 
@@ -289,6 +288,11 @@ public class category extends javax.swing.JFrame {
 
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
+            }
+        });
+        table_1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                table_1MouseClicked(evt);
             }
         });
         jScrollPane1.setViewportView(table_1);
@@ -405,6 +409,53 @@ public class category extends javax.swing.JFrame {
         
         
     }//GEN-LAST:event_add_btnActionPerformed
+
+    private void edit_btnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_edit_btnActionPerformed
+        DefaultTableModel ddt = (DefaultTableModel)table_1.getModel();
+        int selectIndex = table_1.getSelectedRow();
+        
+        int id = Integer.parseInt(ddt.getValueAt(selectIndex, 0).toString());
+        String category_name = cat_txt.getText();
+        String status = status_combox.getSelectedItem().toString();
+        
+        
+        try {
+        Class.forName("org.postgresql.Driver");
+        conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/"+"pos","postgres","swap2");
+        pst = conn.prepareStatement("UPDATE category SET category=?, status=? where id=?");
+        pst.setString(1, category_name);
+        pst.setString(2, status);
+        pst.setInt(3, id);
+        pst.executeUpdate();
+
+        JOptionPane.showMessageDialog(null, "Category Updated");
+        load_tableData();
+        cat_txt.setText("");
+        status_combox.setSelectedIndex(-1);
+
+        cat_txt.requestFocus();
+
+        } catch (ClassNotFoundException ex) {
+            //Logger.getLogger(category.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null, ex, "Error", HEIGHT);
+        } catch (SQLException ex) {
+           // Logger.getLogger(category.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null, ex, "Connection failed", HEIGHT);
+        }
+        
+        
+        
+    }//GEN-LAST:event_edit_btnActionPerformed
+
+    private void table_1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_table_1MouseClicked
+         DefaultTableModel dd = (DefaultTableModel)table_1.getModel();
+         int selectIndex = table_1.getSelectedRow();
+         
+         cat_txt.setText(dd.getValueAt(selectIndex, 1).toString());
+         status_combox.setSelectedItem(dd.getValueAt(selectIndex, 2).toString());
+         
+         
+    }//GEN-LAST:event_table_1MouseClicked
 
  
     public static void main(String args[]) {
