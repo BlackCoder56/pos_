@@ -20,42 +20,43 @@ public class category extends javax.swing.JFrame {
     }
     
     
-    
+    // sql object declarations
     Connection conn;
     PreparedStatement pst;
     
-    // defined methods
     
+    
+    // defined methods    
     private void load_tableData(){
         int c;
         
         try {
-            Class.forName("org.postgresql.Driver");
-            conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/"+"pos","postgres","swap2");
-            pst = conn.prepareStatement("SELECT * FROM category");
-            
-            ResultSet rs = pst.executeQuery();
-            
-            ResultSetMetaData rsd = rs.getMetaData();
-            c = rsd.getColumnCount();
-            
-            
-            DefaultTableModel d = (DefaultTableModel)table_1.getModel();
-            d.setRowCount(0);
-            
-            while(rs.next()){
-                Vector v2 = new Vector();
-                
-                for(int i = 1;i<=c; i++){
-                    v2.add(rs.getString("id"));
-                    v2.add(rs.getString("category"));
-                    v2.add(rs.getString("status"));
+                Class.forName("org.postgresql.Driver");
+                conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/"+"pos","postgres","swap2");
+                pst = conn.prepareStatement("SELECT * FROM category");
+
+                ResultSet rs = pst.executeQuery();
+
+                ResultSetMetaData rsd = rs.getMetaData();
+                c = rsd.getColumnCount();
+
+
+                DefaultTableModel d = (DefaultTableModel)table_1.getModel();
+                d.setRowCount(0);
+
+                while(rs.next()){
+                    Vector v2 = new Vector();
+
+                    for(int i = 1;i<=c; i++){
+                        v2.add(rs.getString("id"));
+                        v2.add(rs.getString("category"));
+                        v2.add(rs.getString("status"));
+                    }
+
+                    d.addRow(v2);
+
                 }
-                
-                d.addRow(v2);
-                
-            }
-            
+
         } catch (ClassNotFoundException ex) {            
             JOptionPane.showMessageDialog(null, ex, "Error", HEIGHT);
         } catch (SQLException ex) {
@@ -230,6 +231,11 @@ public class category extends javax.swing.JFrame {
         });
 
         delete_btn.setText("Delete");
+        delete_btn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                delete_btnActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -379,19 +385,19 @@ public class category extends javax.swing.JFrame {
         String status = status_combox.getSelectedItem().toString();
 
         try {
-        Class.forName("org.postgresql.Driver");
-        conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/"+"pos","postgres","swap2");
-        pst = conn.prepareStatement("INSERT INTO category(category, status) VALUES(?,?)");
-        pst.setString(1, category_name);
-        pst.setString(2, status);
-        pst.executeUpdate();
+            Class.forName("org.postgresql.Driver");
+            conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/"+"pos","postgres","swap2");
+            pst = conn.prepareStatement("INSERT INTO category(category, status) VALUES(?,?)");
+            pst.setString(1, category_name);
+            pst.setString(2, status);
+            pst.executeUpdate();
 
-        JOptionPane.showMessageDialog(null, "Category added");
-        load_tableData();
-        cat_txt.setText("");
-        status_combox.setSelectedIndex(-1);
+            JOptionPane.showMessageDialog(null, "Category added");
+            load_tableData();
+            cat_txt.setText("");
+            status_combox.setSelectedIndex(-1);
 
-        cat_txt.requestFocus();
+            cat_txt.requestFocus();
 
         } catch (ClassNotFoundException ex) {
             //Logger.getLogger(category.class.getName()).log(Level.SEVERE, null, ex);
@@ -420,20 +426,20 @@ public class category extends javax.swing.JFrame {
         
         
         try {
-        Class.forName("org.postgresql.Driver");
-        conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/"+"pos","postgres","swap2");
-        pst = conn.prepareStatement("UPDATE category SET category=?, status=? where id=?");
-        pst.setString(1, category_name);
-        pst.setString(2, status);
-        pst.setInt(3, id);
-        pst.executeUpdate();
+            Class.forName("org.postgresql.Driver");
+            conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/"+"pos","postgres","swap2");
+            pst = conn.prepareStatement("UPDATE category SET category=?, status=? where id=?");
+            pst.setString(1, category_name);
+            pst.setString(2, status);
+            pst.setInt(3, id);
+            pst.executeUpdate();
 
-        JOptionPane.showMessageDialog(null, "Category Updated");
-        load_tableData();
-        cat_txt.setText("");
-        status_combox.setSelectedIndex(-1);
+            JOptionPane.showMessageDialog(null, "Category Updated");
+            load_tableData();
+            cat_txt.setText("");
+            status_combox.setSelectedIndex(-1);
 
-        cat_txt.requestFocus();
+            cat_txt.requestFocus();
 
         } catch (ClassNotFoundException ex) {
             //Logger.getLogger(category.class.getName()).log(Level.SEVERE, null, ex);
@@ -456,6 +462,40 @@ public class category extends javax.swing.JFrame {
          
          
     }//GEN-LAST:event_table_1MouseClicked
+
+    private void delete_btnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_delete_btnActionPerformed
+         DefaultTableModel ddt = (DefaultTableModel)table_1.getModel();
+        int selectIndex = table_1.getSelectedRow();
+        
+        int id = Integer.parseInt(ddt.getValueAt(selectIndex, 0).toString());
+//        String category_name = cat_txt.getText();
+//        String status = status_combox.getSelectedItem().toString();
+        
+        
+        try {
+            Class.forName("org.postgresql.Driver");
+            conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/"+"pos","postgres","swap2");
+            pst = conn.prepareStatement("DELETE FROM category WHERE id=?");          
+            pst.setInt(1, id);
+            pst.executeUpdate();
+
+            JOptionPane.showMessageDialog(null, "Category Deleted!");
+            load_tableData();
+            cat_txt.setText("");
+            status_combox.setSelectedIndex(-1);
+
+            cat_txt.requestFocus();
+
+        } catch (ClassNotFoundException ex) {
+            //Logger.getLogger(category.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null, ex, "Error", HEIGHT);
+        } catch (SQLException ex) {
+           // Logger.getLogger(category.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null, ex, "Connection failed", HEIGHT);
+        }
+        
+        
+    }//GEN-LAST:event_delete_btnActionPerformed
 
  
     public static void main(String args[]) {
