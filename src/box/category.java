@@ -464,34 +464,43 @@ public class category extends javax.swing.JFrame {
     }//GEN-LAST:event_table_1MouseClicked
 
     private void delete_btnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_delete_btnActionPerformed
-         DefaultTableModel ddt = (DefaultTableModel)table_1.getModel();
+        DefaultTableModel ddt = (DefaultTableModel)table_1.getModel();
         int selectIndex = table_1.getSelectedRow();
         
         int id = Integer.parseInt(ddt.getValueAt(selectIndex, 0).toString());
 //        String category_name = cat_txt.getText();
 //        String status = status_combox.getSelectedItem().toString();
         
+        int dialogResult = JOptionPane.showConfirmDialog(null, "Are you sure you want to delete the "+cat_txt.getText()+" category?", "Warning",JOptionPane.YES_NO_OPTION);
         
-        try {
-            Class.forName("org.postgresql.Driver");
-            conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/"+"pos","postgres","swap2");
-            pst = conn.prepareStatement("DELETE FROM category WHERE id=?");          
-            pst.setInt(1, id);
-            pst.executeUpdate();
+        
+        if(dialogResult == JOptionPane.YES_OPTION){
+            try {
+                Class.forName("org.postgresql.Driver");
+                conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/"+"pos","postgres","swap2");
+                pst = conn.prepareStatement("DELETE FROM category WHERE id=?");          
+                pst.setInt(1, id);
+                pst.executeUpdate();
 
-            JOptionPane.showMessageDialog(null, "Category Deleted!");
+                JOptionPane.showMessageDialog(null, "Category Deleted!");
+                load_tableData();
+                cat_txt.setText("");
+                status_combox.setSelectedIndex(-1);
+
+                cat_txt.requestFocus();
+
+            } catch (ClassNotFoundException ex) {
+                //Logger.getLogger(category.class.getName()).log(Level.SEVERE, null, ex);
+                JOptionPane.showMessageDialog(null, ex, "Error", HEIGHT);
+            } catch (SQLException ex) {
+               // Logger.getLogger(category.class.getName()).log(Level.SEVERE, null, ex);
+                JOptionPane.showMessageDialog(null, ex, "Connection failed", HEIGHT);
+            }
+        }
+        else{
             load_tableData();
             cat_txt.setText("");
             status_combox.setSelectedIndex(-1);
-
-            cat_txt.requestFocus();
-
-        } catch (ClassNotFoundException ex) {
-            //Logger.getLogger(category.class.getName()).log(Level.SEVERE, null, ex);
-            JOptionPane.showMessageDialog(null, ex, "Error", HEIGHT);
-        } catch (SQLException ex) {
-           // Logger.getLogger(category.class.getName()).log(Level.SEVERE, null, ex);
-            JOptionPane.showMessageDialog(null, ex, "Connection failed", HEIGHT);
         }
         
         
