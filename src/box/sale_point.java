@@ -7,8 +7,6 @@ import java.sql.PreparedStatement;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -18,9 +16,8 @@ public class sale_point extends javax.swing.JFrame {
 
     public sale_point() {
         initComponents();
-//        load_tableData();
-        barcode_txt.requestFocus();
-        
+
+        barcode_txt.requestFocus();        
         sub_total_txt.setText("0.0");
         pay_txt.setText("0");
         change_txt.setText("0.0");
@@ -31,16 +28,16 @@ public class sale_point extends javax.swing.JFrame {
     Connection conn;
     PreparedStatement pst;
     ResultSet rs;
-    float subtotal = 0;
+    
     
     private void checkqyt()
     {
-        String barcode_number = barcode_txt.getText();
+        int barcode_number = Integer.parseInt(barcode_txt.getText());
         try {
             Class.forName("org.postgresql.Driver");
             conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/"+"pos","postgres","swap2");
             pst = conn.prepareStatement("SELECT * FROM product WHERE barcode=?");
-            pst.setString(1, barcode_number);
+            pst.setInt(1, barcode_number);
             rs = pst.executeQuery();
             
             while(rs.next())
@@ -61,19 +58,23 @@ public class sale_point extends javax.swing.JFrame {
         }
        
     }
+    
+    
     private void pos()
     {
-        if("".equals(barcode_txt.getText())){
-            JOptionPane.showMessageDialog(this, "Please enter product barcode!");
+        float subtotal = 0;
+        
+        if("".equals(barcode_txt.getText()) || "".equals(qty_txt.getText())){
+            JOptionPane.showMessageDialog(this, "Please enter product barcode or quantity!");
             barcode_txt.requestFocus();
         }else{
             
-            String barcode_number = barcode_txt.getText();
+            int barcode_number = Integer.parseInt(barcode_txt.getText());
             try {
                 Class.forName("org.postgresql.Driver");
                 conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/"+"pos","postgres","swap2");
                 pst = conn.prepareStatement("SELECT * FROM product WHERE barcode=?");
-                pst.setString(1, barcode_number);
+                pst.setInt(1, barcode_number);
                 rs = pst.executeQuery();
 
                 while(rs.next())
@@ -107,20 +108,22 @@ public class sale_point extends javax.swing.JFrame {
     //                    subtotal
 
 
-                        for(int i=0; i<table_3.getRowCount(); i++){
+                    for(int i=0; i<table_3.getRowCount(); i++){
 
-                            subtotal = subtotal + Float.parseFloat(table_3.getValueAt(i, 4).toString());
+                         subtotal = subtotal + Float.parseFloat(table_3.getValueAt(i, 4).toString());
 
-                        }
+                    }
 
-                        sub_total_txt.setText(String.valueOf(subtotal));
+                    sub_total_txt.setText(String.valueOf(subtotal));
 
-                        barcode_txt.setText("");
-                        name_txt.setText("");
-                        price_txt.setText("");
-                        qty_txt.setText("");
+                        
 
-                        barcode_txt.requestFocus();
+                    barcode_txt.setText("");
+                    name_txt.setText("");
+                    price_txt.setText("");
+                    qty_txt.setText("");
+
+                    barcode_txt.requestFocus();
 
                     }
 
@@ -147,11 +150,11 @@ public class sale_point extends javax.swing.JFrame {
         jSeparator5 = new javax.swing.JSeparator();
         jSeparator9 = new javax.swing.JSeparator();
         jPanel1 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
+        brand_net = new javax.swing.JLabel();
+        category_net = new javax.swing.JLabel();
+        s_p = new javax.swing.JLabel();
+        product_net = new javax.swing.JLabel();
+        exit = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         jSeparator11 = new javax.swing.JSeparator();
         jSeparator12 = new javax.swing.JSeparator();
@@ -191,26 +194,51 @@ public class sale_point extends javax.swing.JFrame {
 
         jPanel1.setBackground(new java.awt.Color(0, 51, 255));
 
-        jLabel1.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel1.setText("Brand");
+        brand_net.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
+        brand_net.setForeground(new java.awt.Color(255, 255, 255));
+        brand_net.setText("Brand");
+        brand_net.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                brand_netMouseClicked(evt);
+            }
+        });
 
-        jLabel2.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
-        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel2.setText("Category");
+        category_net.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
+        category_net.setForeground(new java.awt.Color(255, 255, 255));
+        category_net.setText("Category");
+        category_net.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                category_netMouseClicked(evt);
+            }
+        });
 
-        jLabel3.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
-        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel3.setText("Pos");
+        s_p.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
+        s_p.setForeground(new java.awt.Color(255, 255, 255));
+        s_p.setText("Pos");
+        s_p.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                s_pMouseClicked(evt);
+            }
+        });
 
-        jLabel4.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
-        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel4.setText("Product");
+        product_net.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
+        product_net.setForeground(new java.awt.Color(255, 255, 255));
+        product_net.setText("Product");
+        product_net.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                product_netMouseClicked(evt);
+            }
+        });
 
-        jLabel5.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
-        jLabel5.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        jLabel5.setText("Exit");
+        exit.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
+        exit.setForeground(new java.awt.Color(255, 255, 255));
+        exit.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        exit.setText("Exit");
+        exit.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                exitMouseClicked(evt);
+            }
+        });
 
         jLabel6.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(255, 255, 255));
@@ -220,47 +248,45 @@ public class sale_point extends javax.swing.JFrame {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(48, 48, 48)
-                .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addComponent(jSeparator16, javax.swing.GroupLayout.Alignment.TRAILING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(46, 46, 46)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jSeparator15, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jSeparator14, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jSeparator13, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jSeparator12, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 105, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel1)
-                            .addComponent(jLabel6)
-                            .addComponent(jSeparator11, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(category_net, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(jPanel1Layout.createSequentialGroup()
+                            .addGap(46, 46, 46)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(jSeparator15, javax.swing.GroupLayout.DEFAULT_SIZE, 146, Short.MAX_VALUE)
+                                .addComponent(jSeparator14, javax.swing.GroupLayout.DEFAULT_SIZE, 146, Short.MAX_VALUE)
+                                .addComponent(jSeparator13, javax.swing.GroupLayout.DEFAULT_SIZE, 146, Short.MAX_VALUE)
+                                .addComponent(jSeparator12, javax.swing.GroupLayout.DEFAULT_SIZE, 146, Short.MAX_VALUE)
+                                .addComponent(jLabel6)
+                                .addComponent(jSeparator11, javax.swing.GroupLayout.DEFAULT_SIZE, 146, Short.MAX_VALUE)
+                                .addComponent(brand_net, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(product_net, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(s_p, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(44, 44, 44)
-                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(98, Short.MAX_VALUE))
+                        .addComponent(exit, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(84, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap(282, Short.MAX_VALUE)
-                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(category_net, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator11, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jLabel1)
+                .addComponent(brand_net)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator12, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(24, 24, 24)
-                .addComponent(jLabel4)
+                .addComponent(product_net)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator13, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(32, 32, 32)
-                .addComponent(jLabel3)
+                .addComponent(s_p)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator14, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(37, 37, 37)
@@ -270,7 +296,7 @@ public class sale_point extends javax.swing.JFrame {
                 .addGap(65, 65, 65)
                 .addComponent(jSeparator16, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(121, 121, 121)
-                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(exit, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(46, 46, 46))
         );
 
@@ -571,15 +597,15 @@ public class sale_point extends javax.swing.JFrame {
         DefaultTableModel model = (DefaultTableModel)table_3.getModel();
         
         model.removeRow(table_3.getSelectedRow());
+        float subtotal = 0;
+        
 
-
-        for(int i=0; i<table_3.getRowCount(); i++){
-
+        for(int i=0; i<table_3.getRowCount(); i++){            
             subtotal = subtotal + Float.parseFloat(table_3.getValueAt(i, 4).toString());
-
+            sub_total_txt.setText(String.valueOf(subtotal));
         }
 
-        sub_total_txt.setText(String.valueOf(subtotal));
+        
      
         
     }//GEN-LAST:event_delete_btnActionPerformed
@@ -646,7 +672,10 @@ public class sale_point extends javax.swing.JFrame {
 
     private void checkout_btnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkout_btnActionPerformed
        
-       if("".equals(pay_txt.getText())){
+        
+        if("0.0".equals(sub_total_txt.getText())){
+            JOptionPane.showMessageDialog(this, "No product selected!");
+        }else if("".equals(pay_txt.getText())){
            JOptionPane.showMessageDialog(this, "Please enter amout in pay field then checkout!");
            pay_txt.setText("");
            pay_txt.requestFocus();
@@ -656,17 +685,17 @@ public class sale_point extends javax.swing.JFrame {
             float change = 0;
             
             
-             if(subtotal1 > paid){
-           JOptionPane.showMessageDialog(this, "Amout tendered is less than "+subtotal1);
-           pay_txt.setText("");
-           pay_txt.requestFocus();
-       }else if(paid == 0){
-           JOptionPane.showMessageDialog(this, "Please enter amout in pay field then checkout!");
-           pay_txt.setText("");
-           pay_txt.requestFocus();
-       }else{
-           change = (paid - subtotal1);
-       }
+            if(subtotal1 > paid){
+            JOptionPane.showMessageDialog(this, "Amout tendered is less than "+subtotal1);
+                pay_txt.setText("");
+                pay_txt.requestFocus();
+            }else if(paid == 0){
+                JOptionPane.showMessageDialog(this, "Please enter amout in pay field then checkout!");
+                pay_txt.setText("");
+                pay_txt.requestFocus();
+            }else{
+                change = (paid - subtotal1);
+            }
        
        change_txt.setText(String.valueOf(change));
         
@@ -683,6 +712,32 @@ public class sale_point extends javax.swing.JFrame {
         
         barcode_txt.requestFocus();
     }//GEN-LAST:event_refresh_btnActionPerformed
+
+    private void category_netMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_category_netMouseClicked
+        category cat = new category();
+        cat.show(true);
+        this.dispose();
+    }//GEN-LAST:event_category_netMouseClicked
+
+    private void brand_netMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_brand_netMouseClicked
+        brand bra = new brand();
+        bra.show(true);
+        this.dispose();
+    }//GEN-LAST:event_brand_netMouseClicked
+
+    private void product_netMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_product_netMouseClicked
+        products prod = new products();
+        prod.show(true);
+        this.dispose();
+    }//GEN-LAST:event_product_netMouseClicked
+
+    private void s_pMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_s_pMouseClicked
+        
+    }//GEN-LAST:event_s_pMouseClicked
+
+    private void exitMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_exitMouseClicked
+        this.dispose();
+    }//GEN-LAST:event_exitMouseClicked
 
  
     public static void main(String args[]) {
@@ -723,21 +778,19 @@ public class sale_point extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton add_btn;
     private javax.swing.JTextField barcode_txt;
+    private javax.swing.JLabel brand_net;
+    private javax.swing.JLabel category_net;
     private javax.swing.JTextField change_txt;
     private javax.swing.JButton checkout_btn;
     private javax.swing.JButton delete_btn;
+    private javax.swing.JLabel exit;
     private javax.swing.JButton jButton1;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
@@ -757,8 +810,10 @@ public class sale_point extends javax.swing.JFrame {
     private javax.swing.JTextField name_txt;
     private javax.swing.JTextField pay_txt;
     private javax.swing.JTextField price_txt;
+    private javax.swing.JLabel product_net;
     private javax.swing.JTextField qty_txt;
     private javax.swing.JButton refresh_btn;
+    private javax.swing.JLabel s_p;
     private javax.swing.JTextField sub_total_txt;
     private javax.swing.JTable table_3;
     // End of variables declaration//GEN-END:variables
